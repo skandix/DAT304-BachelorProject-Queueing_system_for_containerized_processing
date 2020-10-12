@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    image: HelloWorldPython3:latest
+    container_name: python3_web
+    ports:
+    - "80:80"
+    restart: unless-stopped

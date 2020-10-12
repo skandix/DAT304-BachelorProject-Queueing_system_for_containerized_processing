@@ -1,0 +1,98 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\renewcommand{\baselinestretch}{1.5}
+
+\chapter{Discussion}
+\section{Front end}
+\subsection*{Front end programming language}
+The group did not manage to produce a working proof of concept for the front end, due to the lack of a working back end API.
+It was initially thought of to make a front end where user would be able to request containers based on their hardware needs, monitor their state meaning running, stopped or pending in queue. Users were also intended to be able to request to have their containers stopped and restarted. It was also intended that an administrator should be able to watch the entire queue.\\\\
+
+
+The front end was written in Vue.JS due to it being a simpler framework than most of the other that exist today. Though the framework was simpler than most frameworks it was still though to make a front end since the group had no prior experience with front end development. It was also considered to use React as the framework for the front end, but after some research it was concluded by the group that it was a rather steep learning curve in comparison to Vue.JS .
+
+
+% Hvordan startet det 1
+% hva var planen 
+% hva gikk galt '
+% hva kunne gjort annerledes
+% værer selv kritisk
+
+\section{Back end}
+\subsection*{Docker management}
+Kubernetes is still in a rapid development process. It is starting to mature but the system itself is complicated as it tries to be modular enough to fit into as many environments as possible. As such there is no "standard way" to deploy Kubernetes, it has to be customized for each environment. This also makes finding relevant examples outside the official documentation hard, as most discusses single server instances usually through what is called Minikube \cite{minikube}. GPU support is also very fresh through the use of NVIDIA-docker  which was only recently released. As mentioned in existing products the group could not find any projects that could be used in place and as such Kubernetes was the only product we could have used, if not we would have to develop our own Docker management platform but that would be way out of scope and have multiple drawbacks.
+
+\section*{Back end programming languages}
+The group did not manage to produce a working proof of concept for the middleware API and the queue manager. Initially both where intended to be written in Golang as an extension in the Kubernetes dashboard. But due to the complexity of the Kubernetes source, as well as lack of experience with Golang, this was deemed too ambitious and decided against. It was therefore experimented to write the middleware API in PHP using Laravel, but the group did not manage to get this working properly with the authentication. The queue manager was still to be created in Golang as there are libraries to communicate with the cluster available. But due to time constraints and lack of development experience in these languages, none of these were successfully implemented.
+
+\section*{Database}
+During the attempted development, MySQL was used as the members of the group already had existing MySQL instances running and was somewhat familiar with it. There are no preferences on which SQL database to be used, considerations to take into account are what existing engines are running that can be leveraged, what the frameworks being used are supporting, and the database administrators are familiar with.
+
+\section*{Queuing}
+It was intended to implement a First In First Out queue, due to the fact that to implement a proper Weighted Fair Queue we would need to assign what is defined as fair in the current environment. This would imply that we would need consensus from management and the users, and we would need data with respect to the amount of requests as well as resource demands to make an informed decision. As such a WFQ is left as potential future work if a FIFO implementation is not sufficient as the demand increases. Given the modularity this can be swapped in place once an implementation is in place.
+
+\section*{Authentication}
+Using other systems to authenticate such as the built in user management in Laravel, or other identity management systems are possible, but this will have impacts on modularity if the application is to be rewritten to better support a developers specialization with regards to programming languages. We therefore still believe that leveraging the existing directory services will net the best result, as this gives flexibility for future development in terms of authorization using a token based approach once the user is authenticated through LDAP.
+
+%\section{Deviation}
+
+
+
+\newpage\section{Future work}
+Future work details additional features that should be researched and implemented to make a more flexible, robust and secure system which the group did not get to work on due to limited time.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline\textbf{Feature} & \textbf{Priority} \\\hline
+        Central docker image repository & High \\\hline
+        Jupyter password & High \\\hline
+        SSH password & High \\\hline
+        Run custom dockerfile & Medium\\\hline
+        Administration panel & Medium \\\hline
+        Detecting when a job is done & Low \\\hline
+        Logs and stdout output available to requester & Low \\\hline
+    \end{tabular}
+    \caption{Future work}
+    \label{tab:future_work}
+\end{table}
+
+\subsection*{Central docker image repository}
+By default each node in Kubernetes has its own local collection of Docker images, if a request comes in which requires an image the node does not have already it will look at the public Docker hub. This means that if custom images are to be used, it has to be created on all potential nodes a pod could be created on. As such a solution that lets for instance the Master node to be a central repository would be appropriate, meaning that if the worker does not have the image already, it should first ask the master node before trying to use the public Docker Hub.
+
+\subsection*{Jupyter password}
+As of the current implementation a simple port scan will reveal running instances of Jupyter, these are by default not protected and as such will accept any connection. \\
+A solution for Jupyter seems to be the ability to pass the password as an environment variable upon creation of the container as discussed in an issue on GitHub. \cite{jupyter_password} One could then generate a random string and pass this to the container, and expose it through the front end interface.
+
+\subsection*{SSH Password}
+As with Jupyter, currently the Tensorflow image does not have any root password, as such anyone can reveal and access running pods over SSH by a simple port scan. There are two avenues of approach
+\begin{itemize}
+    \item\textbf{Custom docker container}\\
+            On every request that gets a deployment set up, we can auto generate a dockerfile that will run the appropriate commands to create a new image with a custom password. This does have dependency on the central docker image repository to be feasible on scale.
+    \item\textbf{Execute remote commands into pod}\\
+            Once the pod is created we can execute remote commands into it, the drawback is that every time the pod is recreated the password will not persist. As such there is a need for a timed service that checks and keeps passwords up to date on running compute deployments.
+\end{itemize}
+
+\subsection*{Run custom dockerfile}
+To increase flexibility it should be possible to upload a custom dockerfile upon requesting resources. One would then have to confirm that the dockerfile is valid, and distribute it to the cluster in one of the following ways
+\begin{itemize}
+    \item\textbf{Centralized docker image repository}\\
+            If the task of a centralized docker image repository is solved, then we can simply create the Docker image on the particular centralized node, and the worker that is assigned will fetch the image.
+    \item\textbf{Wait for worker choice}\\
+            Once the worker node is selected, we can detect the node and assign that node to build the docker image, which once ready will be picked up by the Kubernetes deployment process.
+    \item\textbf{Create on all worker nodes}\\
+            Lastly we can build the image on all worker nodes.
+\end{itemize}
+The two latter ones are an administrative nightmare as the cluster scales, as such this is a medium priority and should be set to high once the centralized repository has been solved.
+
+
+\subsection*{Administration panel}
+As of now there only exists an interface for the users, an administrative panel for the queuing system should be put in place to easier manage jobs and get an overview. This panel should also include usage statistics as well as predictive calculations based on the queue model defined in chapter 3.
+
+\subsection*{Detecting when a job is done}
+In current design once the job is done, the system has no way of detecting this. As such the user is responsible to log onto the front end and stop the job manually to remove it from the queue, and thus releasing resources back to the cluster. An idea that has been discussed is to create a long unique identifier for each job when their deployments are created. This identifier should be passed into the pods as a variable that scripts can pick up and then subsequently use to call an API endpoint when the job is done.
+
+
+
+% WARNING - WALL OF TEXT INCOMMING
+
+\end{document}

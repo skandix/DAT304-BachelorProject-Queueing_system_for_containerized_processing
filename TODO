@@ -1,0 +1,12 @@
+- Introduksjon - Report structure
+- tech design, kubernetes -> master, finn GPU stuff som må applyes til master for GPU support til script
+- \subsection{Creator | Engine | Spawner | Parent} Må finne navn som funker og oppdatere det i dokumentet, "creator" er brukt til nå... (spørr brinch om dette!)
+- visio tegninger må samkjøres!
+
+
+DONE:
+- Potensielt skrive litt mer om Agner Krarup Erlang, må finne kilde til han au
+- Trenger litt mer substans på Weighted Fair Queue
+- Kubernetes - Service, skrive litt om Nodeports etc.
+- skal vi ha en preface ? 
+- ikke glemme å fylle ut egenerklæring

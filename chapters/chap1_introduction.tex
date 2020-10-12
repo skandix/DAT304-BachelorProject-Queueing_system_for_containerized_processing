@@ -1,0 +1,60 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\renewcommand{\baselinestretch}{1.5}
+\chapter{Introduction}
+\section{Background}
+University of Agder (UiA) has an increased focus on the advancement of artificial intelligence (AI) research, and has a goal of being the leading university in this regard. The research and projects are steadily growing in complexity, requiring increased compute power to efficiently move forward. UiA is also invested in Mechatronics Innovation Lab (MIL) which is part of the national infrastructure for pilot testing and experimental development, which requires increasing compute power to efficiently run simulations and deep learning networks.\\
+
+
+UiA and its partners has therefore invested in specialized compute servers, NVIDIA DGX-1 \cite{nvidia_dgx}. These live as separate servers and are currently limited to running Ubuntu. The current system is based on users having access to one of these servers and then utilize Docker to spawn a small environment where they run their compute jobs. This creates operational overhead, and does not scale properly as more users and servers are added, since distributing the workload across the devices is based on where users have access, and who runs what when.\\
+
+
+It was therefore requested that a project would look into some sort of queuing solution that would distribute the workload without increasing the overhead, while still maintaining visibility into the workloads.
+
+
+\pagebreak\section{Problem definition}
+Find a solution that gives students and faculty members alike an easy to use interface to request compute resources both with and without GPU which serves these requests in a timely fashion when resources are available. In addition, there should be an interface for the administrator to monitor the queue of unserved requests, monitor the usage of the compute nodes, and have a centralized administrative environment for the jobs running. The solution should be able to scale vertically and horizontally with low effort, and the solution should be able to handle compute nodes with and without a GPU. The primary usage is the Tensorflow Docker image which comes pre-installed with Jupyter, it is a user request to have this accessible from their desktop. \cite{prerep}
+
+
+\section{Assumptions and constraints}
+\subsection*{Constraints}
+\begin{itemize}
+    \item Need to borrow projects/people to simulate real workload to predict usability
+    \item Very new technology and platform so documentation might be limited
+\end{itemize}
+\subsection*{Assumptions}
+\begin{itemize}
+    \item Hardware resources will be available to test parts of the solution
+\end{itemize}
+
+\section{Project strategy}
+The project will be performed in three phases; Research, implementation and documentation. The research phase consists of researching tools and technologies to be leveraged in the project, and obtain as much information as possible to be able to make qualified choices later on.\\\\
+During the implementation phase the group will create a proof of concept design as well as implementing and testing individual parts, with the aim of testing the application as a whole.\\\\
+Lastly the documentation consists of writing the final report.
+
+\pagebreak\section{Report structure}
+\begin{itemize}
+    \item \textbf{1. Introduction}\\
+            Defines the intent and scope of the project.
+    \item\textbf{2. High-level overview}\\
+            Shows the project from a high level overview giving insight into the overall concept, tools and technologies leveraged.
+    \item\textbf{3. Theory}\\
+            Describes the theory behind major tools and technologies that has been leveraged in the solution, as well as giving background on terms that are used further in the report. Familiarity with this chapter is important to understand the design and solution.
+    \item\textbf{4. Solution}\\
+            Contains explanation of the intended design
+    \item\textbf{5. Discussion}\\
+            A post-implementation discussion on the project as a whole, looking back at choices in a self critical manner, as well as future plans for improvements and further work.
+    \item\textbf{6. Conclusion}\\
+            A sum of the chapters, and ultimately answering if the project was a success or not.
+\end{itemize}
+
+\section{Existing products}
+The group could not find any products that satisfied the problem statement. As such, existing products focus on alternatives to Kubernetes.
+\subsection*{Docker swarm}
+Docker swarm is a usage mode built into Docker to handle clustered Docker environments. It works in a decentralized design, handling specializations such as manager and worker nodes at runtime. It supports consistency of the environment through monitoring the cluster state and attempts to maintain the desired state by distributing workloads and redeploys containers should a worker node go down. Unfortunately, docker swarm does not support NVIDIA-docker and as such it fails one of the requirements in the problem statement. \cite{docker_swarm}
+
+\subsection*{OpenShift}
+OpenShift is a product by Red Hat. It uses docker and Kubernetes and as such has much of the same feature set as Kubernetes. Since Red Hat is building on top of Kubernetes they are behind on versions. Although OpenShift offers a lot of extra features, it only runs on RHEL and CentOS. Since the current infrastructure given the NVIDIA DGX servers require Ubuntu, we can not guarantee stability and functionality after testing, as such we had to dismiss OpenShift as well. \cite{openshift}
+
+
+\end{document}

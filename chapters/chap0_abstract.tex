@@ -1,0 +1,7 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\begin{abstract}
+This project aims to create a proof of concept for queuing compute requests and distributing these requests in containers in a cluster of physical and virtual worker nodes. We are going to focus on NVIDIA GPU processing by utilizing NVIDIA DGX-1 servers present at University of Agder. The cluster and the platform should be scalable both horizontally and vertically. Through qualitative research on different products and their documentation, Kubernetes was used to handle clustering and distribution of container workloads. We attempted to use Vue.JS to create an easy to use front end, Laravel/PHP to create a middleware, and Golang to perform communication between the queue and the Kubernetes cluster to create and manage containers. Due to time constraints and lack of development experience the system did not get completed. Familiarizing ourselves and testing the Kubernetes platform turned out to take more time than anticipated. The group therefore focused on detailing the model in such a way that it should be possible to implement the components based on this report.\\\\
+This is a promising avenue to accomplish the original goal of creating a scalable queuing system for compute requests. We believe that the platform will be feasible and scalable by using the described technologies and a microservice perspective. But further research and testing is necessary.
+\end{abstract}
+\end{document}
